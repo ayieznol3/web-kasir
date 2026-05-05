@@ -1,7 +1,7 @@
 
 # 🛒 Aplikasi Kasir - Point of Sale
 
-#FULL DIBUAT DENGAN AI DEEPSEEK
+## FULL DIBUAT DENGAN AI DEEPSEEK
 
 Aplikasi kasir lengkap untuk toko kelontong, warung sembako, dan agen PPOB. Dibangun dengan **PHP Native + MySQL + Tailwind CSS**.
 
