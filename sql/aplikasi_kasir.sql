@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 04 Bulan Mei 2026 pada 01.40
--- Versi server: 10.4.6-MariaDB
--- Versi PHP: 7.3.10
+-- Waktu pembuatan: 04 Bulan Mei 2026 pada 06.48
+-- Versi server: 10.4.32-MariaDB
+-- Versi PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -34,7 +34,7 @@ CREATE TABLE `grosir` (
   `tipe_diskon` enum('persen','nominal') NOT NULL DEFAULT 'persen',
   `nilai_diskon` decimal(10,2) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
 
@@ -48,34 +48,23 @@ CREATE TABLE `log_aktivitas` (
   `aktivitas` varchar(100) NOT NULL,
   `detail` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data untuk tabel `log_aktivitas`
 --
 
 INSERT INTO `log_aktivitas` (`id`, `user_id`, `aktivitas`, `detail`, `created_at`) VALUES
-(1, 1, 'Logout', 'Pak Ahmad logout', '2026-05-03 04:18:29'),
-(2, 2, 'Login', 'Budi Santoso berhasil login', '2026-05-03 04:18:40'),
-(3, 2, 'Logout', 'Budi Santoso logout', '2026-05-03 04:50:10'),
-(4, 1, 'Login', 'Administrator berhasil login', '2026-05-03 04:50:28'),
-(5, 1, 'Transaksi', 'Transaksi INV-20260503-792: Total Rp 4000, Bayar Rp 5000', '2026-05-03 07:31:56'),
-(6, 1, 'Login', 'Administrator berhasil login', '2026-05-03 09:09:29'),
-(7, 1, 'Login', 'Administrator berhasil login', '2026-05-03 09:10:01'),
-(8, 1, 'Login', 'Administrator berhasil login', '2026-05-03 21:25:43'),
-(9, 1, 'Login', 'Administrator berhasil login', '2026-05-03 22:14:34'),
-(10, 1, 'Login', 'Administrator berhasil login', '2026-05-03 22:18:29'),
-(11, 1, 'Login', 'Administrator berhasil login', '2026-05-04 00:51:50'),
-(12, 1, 'Tambah Satuan', 'Satuan Dus untuk Aqua Botol 600ml', '2026-05-04 00:54:23'),
-(13, 1, 'Transaksi', 'Transaksi INV-20260504-473: Total Rp 120000, Bayar Rp 150000', '2026-05-04 01:02:57'),
-(14, 1, 'Transaksi', 'Transaksi INV-20260504-691: Total Rp 120000, Bayar Rp 200000', '2026-05-04 01:11:06'),
-(15, 1, 'Void Transaksi', 'Void transaksi INV-20260504-691: uji coba', '2026-05-04 01:13:42'),
-(16, 1, 'Void Transaksi', 'Void transaksi INV-20260504-473: uji coba 2', '2026-05-04 01:13:57'),
-(17, 1, 'Transaksi', 'Transaksi INV-20260504-283: Total Rp 120000, Bayar Rp 200000', '2026-05-04 01:20:03'),
-(18, 1, 'Transaksi', 'Transaksi INV-20260504-275: Total Rp 2500, Bayar Rp 5000', '2026-05-04 01:20:26'),
-(19, 1, 'Transaksi', 'Transaksi INV-20260504-576: Total Rp 55000, Bayar Rp 60000', '2026-05-04 01:20:51'),
-(20, 1, 'Void Transaksi', 'Void transaksi INV-20260504-275: tes lagi', '2026-05-04 01:35:48'),
-(21, 1, 'Void Transaksi', 'Void transaksi INV-20260504-576: tes tes lagi', '2026-05-04 01:36:00');
+(23, 1, 'Transaksi', 'Transaksi INV-20260504-029: Total Rp 60000, Bayar Rp 100000', '2026-05-04 02:45:05'),
+(24, 1, 'Stock Opname', 'Opname: Aqua Botol 600ml | Sistem: 4 ? Nyata: 100 | Selisih: 96 | Alasan: Lainnya', '2026-05-04 03:08:25'),
+(25, 1, 'Void Transaksi', 'Void transaksi INV-20260504-029: tes 1', '2026-05-04 03:13:34'),
+(26, 1, 'Transaksi', 'Transaksi INV-20260504-248: Total Rp 55000, Bayar Rp 60000', '2026-05-04 03:14:54'),
+(27, 1, 'Void Transaksi', 'Void transaksi INV-20260504-248: tes 2', '2026-05-04 03:44:30'),
+(28, 1, 'Transaksi', 'Transaksi INV-20260504-039: Total Rp 5000, Bayar Rp 0, Pelanggan: pelanggan 1, Piutang: Rp 5000', '2026-05-04 04:20:26'),
+(29, 1, 'Transaksi', 'Transaksi INV-20260504-322: Total Rp 3000, Bayar Rp 0, Pelanggan: pelanggan 1, Piutang: Rp 3000', '2026-05-04 04:28:26'),
+(30, 1, 'Pinjaman Manual', 'Pinjaman untuk pelanggan 1: Rp 5000, pulsa', '2026-05-04 04:31:57'),
+(31, 1, 'Bayar Piutang', 'Pembayaran Rp 5000 dari pelanggan ID 2', '2026-05-04 04:32:13'),
+(32, 1, 'Transaksi', 'Transaksi INV-20260504-185: Total Rp 8500, Bayar Rp 0, Pelanggan: pelanggan 1, Piutang: Rp 8500', '2026-05-04 04:42:33');
 
 -- --------------------------------------------------------
 
@@ -92,25 +81,22 @@ CREATE TABLE `mutasi_stok` (
   `qty_keluar` int(11) NOT NULL DEFAULT 0,
   `keterangan` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data untuk tabel `mutasi_stok`
 --
 
 INSERT INTO `mutasi_stok` (`id`, `produk_id`, `transaksi_id`, `pembelian_id`, `qty_masuk`, `qty_keluar`, `keterangan`, `created_at`) VALUES
-(1, 30, 1, NULL, 0, 1, 'Penjualan INV-20260503-792', '2026-05-03 07:31:56'),
-(2, 45, 1, NULL, 0, 1, 'Penjualan INV-20260503-792', '2026-05-03 07:31:56'),
-(3, 44, 1, NULL, 0, 1, 'Penjualan INV-20260503-792', '2026-05-03 07:31:56'),
-(4, 30, 2, NULL, 0, 2, 'Penjualan INV-20260504-473', '2026-05-04 01:02:57'),
-(5, 30, 3, NULL, 0, 2, 'Penjualan INV-20260504-691', '2026-05-04 01:11:06'),
-(6, 30, 3, NULL, 2, 0, 'Void transaksi: INV-20260504-691', '2026-05-04 01:13:42'),
-(7, 30, 2, NULL, 2, 0, 'Void transaksi: INV-20260504-473', '2026-05-04 01:13:57'),
-(8, 30, 4, NULL, 0, 48, 'Penjualan INV-20260504-283', '2026-05-04 01:20:03'),
-(9, 30, 5, NULL, 0, 1, 'Penjualan INV-20260504-275', '2026-05-04 01:20:26'),
-(10, 30, 6, NULL, 0, 24, 'Penjualan INV-20260504-576', '2026-05-04 01:20:51'),
-(11, 30, 5, NULL, 1, 0, 'Void transaksi: INV-20260504-275', '2026-05-04 01:35:48'),
-(12, 30, 6, NULL, 1, 0, 'Void transaksi: INV-20260504-576', '2026-05-04 01:36:00');
+(13, 30, 7, NULL, 0, 24, 'Penjualan INV-20260504-029', '2026-05-04 02:45:05'),
+(14, 30, NULL, NULL, 96, 0, 'Opname: Lainnya', '2026-05-04 03:08:25'),
+(15, 30, 7, NULL, 24, 0, 'Void transaksi: INV-20260504-029', '2026-05-04 03:13:34'),
+(16, 30, 10, NULL, 0, 24, 'Penjualan INV-20260504-248', '2026-05-04 03:14:54'),
+(17, 30, 10, NULL, 24, 0, 'Void transaksi: INV-20260504-248', '2026-05-04 03:44:30'),
+(18, 46, 11, NULL, 0, 1, 'Penjualan INV-20260504-039', '2026-05-04 04:20:26'),
+(19, 30, 12, NULL, 0, 1, 'Penjualan INV-20260504-322', '2026-05-04 04:28:26'),
+(20, 30, 13, NULL, 0, 1, 'Penjualan INV-20260504-185', '2026-05-04 04:42:33'),
+(21, 43, 13, NULL, 0, 1, 'Penjualan INV-20260504-185', '2026-05-04 04:42:33');
 
 -- --------------------------------------------------------
 
@@ -125,14 +111,15 @@ CREATE TABLE `pelanggan` (
   `alamat` text DEFAULT NULL,
   `saldo_piutang` decimal(10,2) NOT NULL DEFAULT 0.00,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data untuk tabel `pelanggan`
 --
 
 INSERT INTO `pelanggan` (`id`, `nama`, `no_hp`, `alamat`, `saldo_piutang`, `created_at`) VALUES
-(1, 'Umum', '-', '-', 0.00, '2026-05-03 04:11:18');
+(1, 'Umum', '-', '-', 0.00, '2026-05-03 04:11:18'),
+(2, 'pelanggan 1', '085204614659', 'lmg', 16500.00, '2026-05-04 03:16:38');
 
 -- --------------------------------------------------------
 
@@ -150,7 +137,7 @@ CREATE TABLE `pembelian` (
   `harga_satuan` decimal(10,2) NOT NULL,
   `keterangan` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
 
@@ -165,7 +152,7 @@ CREATE TABLE `pengeluaran` (
   `jumlah` decimal(10,2) NOT NULL,
   `keterangan` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
 
@@ -185,7 +172,18 @@ CREATE TABLE `piutang` (
   `keterangan` text DEFAULT NULL,
   `user_id` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data untuk tabel `piutang`
+--
+
+INSERT INTO `piutang` (`id`, `pelanggan_id`, `transaksi_id`, `no_referensi`, `tipe`, `jumlah`, `saldo_sebelum`, `saldo_sesudah`, `keterangan`, `user_id`, `created_at`) VALUES
+(1, 2, 11, 'INV-20260504-039', 'transaksi', 5000.00, 0.00, 5000.00, 'Kekurangan bayar transaksi', 1, '2026-05-04 04:20:26'),
+(2, 2, 12, 'INV-20260504-322', 'transaksi', 3000.00, 5000.00, 8000.00, 'Kekurangan bayar transaksi', 1, '2026-05-04 04:28:26'),
+(3, 2, NULL, 'PINJ-20260504-960', 'pinjaman', 5000.00, 8000.00, 13000.00, 'pulsa', 1, '2026-05-04 04:31:57'),
+(4, 2, NULL, 'BYR-202605041132', 'pembayaran', 5000.00, 13000.00, 8000.00, 'Pembayaran piutang', 1, '2026-05-04 04:32:13'),
+(5, 2, 13, 'INV-20260504-185', 'transaksi', 8500.00, 8000.00, 16500.00, 'Kekurangan bayar transaksi', 1, '2026-05-04 04:42:33');
 
 -- --------------------------------------------------------
 
@@ -204,14 +202,14 @@ CREATE TABLE `produk` (
   `stok_dasar` int(11) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data untuk tabel `produk`
 --
 
 INSERT INTO `produk` (`id`, `kode`, `nama`, `gambar`, `satuan_dasar`, `harga_beli`, `harga_jual`, `stok_dasar`, `created_at`, `updated_at`) VALUES
-(30, '888608101053', 'Aqua Botol 600ml', NULL, 'botol', 2000.00, 3000.00, 28, '2026-05-03 04:49:13', '2026-05-04 01:36:00'),
+(30, '888608101053', 'Aqua Botol 600ml', NULL, 'botol', 2000.00, 3000.00, 122, '2026-05-03 04:49:13', '2026-05-04 04:42:33'),
 (31, '888608101138', 'Aqua Galon Asli', NULL, 'galon', 19000.00, 21000.00, 10, '2026-05-03 04:49:13', '2026-05-03 05:58:52'),
 (32, 'BRG-AQUA-DUS', 'Aqua Botol 600ml / 1 Dus', NULL, 'dus', 46000.00, 52000.00, 20, '2026-05-03 04:49:13', '2026-05-03 05:58:52'),
 (33, 'BRG-CLEO-DUS', 'Cleo Gelas / 1 Dus', NULL, 'dus', 21500.00, 24000.00, 15, '2026-05-03 04:49:13', '2026-05-03 05:58:52'),
@@ -224,10 +222,10 @@ INSERT INTO `produk` (`id`, `kode`, `nama`, `gambar`, `satuan_dasar`, `harga_bel
 (40, 'BRG-GULA-SJP', 'Gula SJP', NULL, 'kg', 15800.00, 17000.00, 25, '2026-05-03 04:49:13', '2026-05-03 05:58:52'),
 (41, 'BRG-FERMINA', 'Fermina Botol 700ml', NULL, 'botol', 16250.00, 17500.00, 20, '2026-05-03 04:49:13', '2026-05-03 05:58:52'),
 (42, 'BRG-MINYAK-KITA', 'Minyak Kita 1 Liter', NULL, 'botol', 15800.00, 17000.00, 30, '2026-05-03 04:49:13', '2026-05-03 05:58:52'),
-(43, 'BRG-RINSO', 'Rinso Cair 20ml / 1 Renteng', NULL, 'renteng', 4625.00, 5500.00, 25, '2026-05-03 04:49:13', '2026-05-03 05:58:52'),
+(43, 'BRG-RINSO', 'Rinso Cair 20ml / 1 Renteng', NULL, 'renteng', 4625.00, 5500.00, 24, '2026-05-03 04:49:13', '2026-05-04 04:42:33'),
 (44, 'BRG-SPENTEN', 'Sasu Pentene', NULL, 'sachet', 400.00, 500.00, 99, '2026-05-03 04:49:13', '2026-05-03 07:31:56'),
 (45, '4902430566896', 'Head and Shoulders Sachet', NULL, 'sachet', 400.00, 500.00, 79, '2026-05-03 04:49:13', '2026-05-03 07:31:56'),
-(46, 'BRG-EMERON', 'Sampo Emeron / 1 Renteng', NULL, 'renteng', 4450.00, 5000.00, 20, '2026-05-03 04:49:13', '2026-05-03 05:58:52'),
+(46, 'BRG-EMERON', 'Sampo Emeron / 1 Renteng', NULL, 'renteng', 4450.00, 5000.00, 19, '2026-05-03 04:49:13', '2026-05-04 04:20:26'),
 (47, 'BRG-SOKLIN-10RB', 'Soklin 10rb 425gr', NULL, 'pcs', 8600.00, 10000.00, 25, '2026-05-03 04:49:13', '2026-05-03 05:58:52'),
 (48, 'BRG-SOKLIN-PK-BIJI', 'Soklin PK / Biji', NULL, 'pcs', 700.00, 1000.00, 80, '2026-05-03 04:49:13', '2026-05-03 05:58:52'),
 (49, 'BRG-SOKLIN-PK-RENTENG', 'Soklin PK / Renteng', NULL, 'renteng', 4750.00, 5500.00, 20, '2026-05-03 04:49:13', '2026-05-03 05:58:52'),
@@ -254,7 +252,7 @@ CREATE TABLE `satuan` (
   `isi_satuan` int(11) NOT NULL,
   `harga_jual` decimal(10,2) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data untuk tabel `satuan`
@@ -281,7 +279,14 @@ CREATE TABLE `stock_opname` (
   `keterangan` text DEFAULT NULL,
   `kerugian` decimal(10,2) DEFAULT 0.00,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data untuk tabel `stock_opname`
+--
+
+INSERT INTO `stock_opname` (`id`, `produk_id`, `user_id`, `stok_sistem`, `stok_nyata`, `selisih`, `tipe`, `alasan`, `keterangan`, `kerugian`, `created_at`) VALUES
+(1, 30, 1, 4, 100, 96, 'tambah', 'Lainnya', 'tambahan', 0.00, '2026-05-04 03:08:25');
 
 -- --------------------------------------------------------
 
@@ -300,19 +305,18 @@ CREATE TABLE `transaksi` (
   `kurang` decimal(10,2) NOT NULL DEFAULT 0.00,
   `status` enum('lunas','piutang','void') NOT NULL DEFAULT 'lunas',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data untuk tabel `transaksi`
 --
 
 INSERT INTO `transaksi` (`id`, `no_invoice`, `user_id`, `pelanggan_id`, `total`, `bayar`, `kembalian`, `kurang`, `status`, `created_at`) VALUES
-(1, 'INV-20260503-792', 1, NULL, 4000.00, 5000.00, 1000.00, 0.00, 'lunas', '2026-05-03 07:31:56'),
-(2, 'INV-20260504-473', 1, NULL, 120000.00, 150000.00, 30000.00, 0.00, 'void', '2026-05-04 01:02:57'),
-(3, 'INV-20260504-691', 1, NULL, 120000.00, 200000.00, 80000.00, 0.00, 'void', '2026-05-04 01:11:06'),
-(4, 'INV-20260504-283', 1, NULL, 120000.00, 200000.00, 80000.00, 0.00, 'lunas', '2026-05-04 01:20:03'),
-(5, 'INV-20260504-275', 1, NULL, 2500.00, 5000.00, 2500.00, 0.00, 'void', '2026-05-04 01:20:26'),
-(6, 'INV-20260504-576', 1, NULL, 55000.00, 60000.00, 5000.00, 0.00, 'void', '2026-05-04 01:20:51');
+(7, 'INV-20260504-029', 1, NULL, 60000.00, 100000.00, 40000.00, 0.00, 'void', '2026-05-04 02:45:05'),
+(10, 'INV-20260504-248', 1, NULL, 55000.00, 60000.00, 5000.00, 0.00, 'void', '2026-05-04 03:14:54'),
+(11, 'INV-20260504-039', 1, 2, 5000.00, 0.00, 0.00, 5000.00, 'piutang', '2026-05-04 04:20:26'),
+(12, 'INV-20260504-322', 1, 2, 3000.00, 0.00, 0.00, 3000.00, 'piutang', '2026-05-04 04:28:26'),
+(13, 'INV-20260504-185', 1, 2, 8500.00, 0.00, 0.00, 8500.00, 'piutang', '2026-05-04 04:42:33');
 
 -- --------------------------------------------------------
 
@@ -330,21 +334,19 @@ CREATE TABLE `transaksi_detail` (
   `tipe_harga` varchar(50) DEFAULT NULL,
   `harga_satuan` decimal(10,2) NOT NULL,
   `subtotal` decimal(10,2) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data untuk tabel `transaksi_detail`
 --
 
 INSERT INTO `transaksi_detail` (`id`, `transaksi_id`, `produk_id`, `qty`, `qty_dasar`, `satuan`, `tipe_harga`, `harga_satuan`, `subtotal`) VALUES
-(1, 1, 30, 1, 0, 'botol', 'Ecer', 3000.00, 3000.00),
-(2, 1, 45, 1, 0, 'sachet', 'Ecer', 500.00, 500.00),
-(3, 1, 44, 1, 0, 'sachet', 'Ecer', 500.00, 500.00),
-(4, 2, 30, 2, 0, 'Dus', 'Paket', 60000.00, 120000.00),
-(5, 3, 30, 2, 0, 'Dus', 'Paket', 60000.00, 120000.00),
-(6, 4, 30, 2, 0, 'Dus', 'Paket', 60000.00, 120000.00),
-(7, 5, 30, 1, 0, 'botol', 'override', 2500.00, 2500.00),
-(8, 6, 30, 1, 0, 'Dus', 'Paket', 55000.00, 55000.00);
+(1, 7, 30, 1, 24, 'Dus', 'Paket', 60000.00, 60000.00),
+(2, 10, 30, 1, 24, 'Dus', 'Paket', 55000.00, 55000.00),
+(3, 11, 46, 1, 1, 'renteng', 'Ecer', 5000.00, 5000.00),
+(4, 12, 30, 1, 1, 'botol', 'Ecer', 3000.00, 3000.00),
+(5, 13, 30, 1, 1, 'botol', 'Ecer', 3000.00, 3000.00),
+(6, 13, 43, 1, 1, 'renteng', 'Ecer', 5500.00, 5500.00);
 
 -- --------------------------------------------------------
 
@@ -359,7 +361,7 @@ CREATE TABLE `users` (
   `nama` varchar(100) NOT NULL,
   `role` enum('admin','kasir') NOT NULL DEFAULT 'kasir',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data untuk tabel `users`
@@ -487,19 +489,19 @@ ALTER TABLE `grosir`
 -- AUTO_INCREMENT untuk tabel `log_aktivitas`
 --
 ALTER TABLE `log_aktivitas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT untuk tabel `mutasi_stok`
 --
 ALTER TABLE `mutasi_stok`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT untuk tabel `pelanggan`
 --
 ALTER TABLE `pelanggan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `pembelian`
@@ -517,7 +519,7 @@ ALTER TABLE `pengeluaran`
 -- AUTO_INCREMENT untuk tabel `piutang`
 --
 ALTER TABLE `piutang`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT untuk tabel `produk`
@@ -535,19 +537,19 @@ ALTER TABLE `satuan`
 -- AUTO_INCREMENT untuk tabel `stock_opname`
 --
 ALTER TABLE `stock_opname`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `transaksi`
 --
 ALTER TABLE `transaksi`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT untuk tabel `transaksi_detail`
 --
 ALTER TABLE `transaksi_detail`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT untuk tabel `users`
