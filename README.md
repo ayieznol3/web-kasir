@@ -72,4 +72,4 @@ Aplikasi kasir lengkap untuk toko kelontong, warung sembako, dan agen PPOB. Diba
 
 ### 1. Clone repository
 ```bash
-git clone https://github.com/username/aplikasi-kasir.git
+git clone https://github.com/username/web-kasir.git
