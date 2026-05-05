@@ -458,35 +458,94 @@ function updateQty(index, delta) {
 }
 
 // ==================== RENDER KERANJANG ====================
+// ==================== RENDER KERANJANG ====================
 function renderCart() {
-    const container = document.getElementById('keranjang-items'), empty = document.getElementById('keranjang-kosong'), count = document.getElementById('count-keranjang'), btn = document.getElementById('btn-bayar');
-    if (cart.length === 0) {
-        container.innerHTML = ''; empty.classList.remove('hidden'); count.textContent = '0';
-        document.getElementById('grand-total').textContent = 'Rp 0'; document.getElementById('header-total').textContent = 'Rp 0';
-        btn.disabled = true; document.getElementById('input-bayar').value = ''; document.getElementById('info-pembayaran-m').classList.add('hidden'); return;
-    }
-    empty.classList.add('hidden'); count.textContent = cart.length; btn.disabled = false;
+    const container = document.getElementById('keranjang-items');
+    const empty = document.getElementById('keranjang-kosong');
+    const count = document.getElementById('count-keranjang');
+    const btn = document.getElementById('btn-bayar');
     
-    let html = '', grandTotal = 0;
+    if (cart.length === 0) {
+        container.innerHTML = '';
+        empty.classList.remove('hidden');
+        count.textContent = '0';
+        document.getElementById('grand-total').textContent = 'Rp 0';
+        document.getElementById('header-total').textContent = 'Rp 0';
+        btn.disabled = true;
+        document.getElementById('input-bayar').value = '';
+        document.getElementById('info-pembayaran-m').classList.add('hidden');
+        return;
+    }
+    
+    empty.classList.add('hidden');
+    count.textContent = cart.length;
+    btn.disabled = false;
+    
+    let html = '';
+    let grandTotal = 0;
+    
     cart.forEach((item, index) => {
         const subtotal = item.isPPOB ? (item.nominal + item.admin) : (item.harga * item.qty);
-        item.subtotal = subtotal; grandTotal += subtotal;
-        html += `<div class="py-2"><div class="flex items-center justify-between gap-2">
-            <div class="flex-1 min-w-0"><p class="text-xs font-medium truncate">${item.nama}${item.isCustom?'<span class="ml-1 text-xs bg-orange-100 text-orange-600 px-1 rounded">Custom</span>':''}${item.hargaOverride?'<span class="ml-1 text-xs bg-yellow-100 text-yellow-600 px-1 rounded">Diubah</span>':''}</p>
-            ${item.isPPOB?`<p class="text-xs text-gray-400">Admin: Rp ${item.admin.toLocaleString()}</p>`:`
-            <div class="flex items-center gap-1 mt-1">
-                <button onclick="updateQty(${index},-1)" class="w-5 h-5 bg-gray-100 rounded text-xs">−</button><span class="text-xs font-bold w-5 text-center">${item.qty}</span><button onclick="updateQty(${index},1)" class="w-5 h-5 bg-gray-100 rounded text-xs">+</button>
-                ${!item.isCustom?`<select onchange="changeSatuan(${index},this.value)" class="text-xs border rounded px-1 py-0.5 ml-1 bg-white" id="satuan-m-${index}"><option value="dasar">${item.satuan||'pcs'} (ecer)</option></select><button onclick="showEditHarga(${index})" class="text-gray-400 text-xs ml-1">✏️</button>`:`<span class="text-xs bg-orange-100 text-orange-600 px-1 rounded">Custom</span>`}
-            </div><p class="text-xs text-gray-400 mt-0.5">${item.qty} × Rp ${item.harga.toLocaleString()}</p>`}
-            </div><div class="text-right flex-shrink-0"><p class="text-xs font-bold">Rp ${subtotal.toLocaleString()}</p><button onclick="removeItem(${index})" class="text-red-400 text-xs mt-1">✕</button></div>
-        </div></div>`;
+        item.subtotal = subtotal;
+        grandTotal += subtotal;
+        
+        // ============ TAMPILAN 2 BARIS MOBILE ============
+        html += `
+            <div class="flex items-center justify-between py-1.5 px-1 border-b border-gray-100 hover:bg-gray-50 transition text-xs">
+                
+                <!-- Kiri: Nama + Detail -->
+                <div class="flex-1 min-w-0 mr-1">
+                    <p class="font-medium truncate text-[11px]">
+                        ${item.nama}
+                        ${item.isCustom ? '<span class="text-[9px] bg-orange-100 text-orange-600 px-1 rounded ml-1">Cust</span>' : ''}
+                        ${item.hargaOverride ? '<span class="text-[9px] bg-yellow-100 text-yellow-600 px-1 rounded ml-1">Ubah</span>' : ''}
+                    </p>
+                    <p class="text-gray-500 text-[10px] mt-0.5">
+                        ${item.isPPOB 
+                            ? 'Admin: Rp ' + item.admin.toLocaleString()
+                            : item.qty + ' × ' + (item.satuanType !== 'dasar' ? item.satuanType : item.satuan || 'pcs') + ' × Rp ' + item.harga.toLocaleString()
+                        }
+                    </p>
+                </div>
+                
+                <!-- Kanan: Qty, Subtotal, Aksi -->
+                <div class="flex items-center gap-0.5 flex-shrink-0">
+                    ${!item.isPPOB ? `
+                        <button onclick="updateQty(${index}, -1)" class="w-4 h-4 bg-gray-100 rounded text-[9px] leading-none">−</button>
+                        <span class="text-[10px] font-bold w-4 text-center">${item.qty}</span>
+                        <button onclick="updateQty(${index}, 1)" class="w-4 h-4 bg-gray-100 rounded text-[9px] leading-none">+</button>
+                        
+                        ${!item.isCustom ? `
+                        <select onchange="changeSatuan(${index}, this.value)" 
+                                class="text-[9px] border rounded px-0.5 py-0.5 bg-white w-14"
+                                id="satuan-m-${index}">
+                            <option value="dasar" ${item.satuanType === 'dasar' ? 'selected' : ''}>${item.satuan || 'pcs'}</option>
+                        </select>
+                        <button onclick="showEditHarga(${index})" class="text-gray-400 hover:text-primary text-[9px]" title="Edit Harga">✏️</button>
+                        ` : ''}
+                    ` : ''}
+                    
+                    <span class="text-[10px] font-bold ml-0.5">Rp ${subtotal.toLocaleString()}</span>
+                    
+                    <button onclick="removeItem(${index})" class="text-red-400 hover:text-red-600 text-[9px] ml-0.5">✕</button>
+                </div>
+                
+            </div>`;
     });
     
     container.innerHTML = html;
     document.getElementById('grand-total').textContent = 'Rp ' + grandTotal.toLocaleString();
     document.getElementById('header-total').textContent = 'Rp ' + grandTotal.toLocaleString();
-    cart.forEach((item, index) => { if (!item.isPPOB && !item.isCustom && item.produkId > 0) setTimeout(() => loadSatuanOptions(index, item.produkId), 100); });
-    document.getElementById('input-bayar').value = ''; document.getElementById('input-bayar-piutang').value = '';
+    
+    // Load satuan options
+    cart.forEach((item, index) => {
+        if (!item.isPPOB && !item.isCustom && item.produkId > 0) {
+            setTimeout(() => loadSatuanOptions(index, item.produkId), 100);
+        }
+    });
+    
+    document.getElementById('input-bayar').value = '';
+    document.getElementById('input-bayar-piutang').value = '';
     document.getElementById('info-pembayaran-m').classList.add('hidden');
 }
 

@@ -599,6 +599,7 @@ function updateQty(index, delta) {
 }
 
 // ==================== RENDER KERANJANG ====================
+// ==================== RENDER KERANJANG ====================
 function renderCart() {
     const container = document.getElementById('keranjang-items');
     const empty = document.getElementById('keranjang-kosong');
@@ -606,48 +607,84 @@ function renderCart() {
     const btnBayar = document.getElementById('btn-bayar');
     
     if (cart.length === 0) {
-        container.innerHTML = ''; empty.classList.remove('hidden'); count.textContent = '0';
-        document.getElementById('grand-total').textContent = 'Rp 0'; btnBayar.disabled = true;
-        document.getElementById('input-bayar').value = ''; document.getElementById('info-pembayaran').classList.add('hidden'); return;
+        container.innerHTML = '';
+        empty.classList.remove('hidden');
+        count.textContent = '0';
+        document.getElementById('grand-total').textContent = 'Rp 0';
+        btnBayar.disabled = true;
+        document.getElementById('input-bayar').value = '';
+        document.getElementById('info-pembayaran').classList.add('hidden');
+        return;
     }
-    empty.classList.add('hidden'); count.textContent = cart.length; btnBayar.disabled = false;
     
-    let html = ''; let grandTotal = 0;
+    empty.classList.add('hidden');
+    count.textContent = cart.length;
+    btnBayar.disabled = false;
+    
+    let html = '';
+    let grandTotal = 0;
+    
     cart.forEach((item, index) => {
         const subtotal = item.isPPOB ? (item.nominal + item.admin) : (item.harga * item.qty);
-        item.subtotal = subtotal; grandTotal += subtotal;
+        item.subtotal = subtotal;
+        grandTotal += subtotal;
+        
+        // ============ TAMPILAN 2 BARIS ============
         html += `
-            <div class="py-1.5 px-2 hover:bg-gray-50 transition">
-                <div class="flex items-start justify-between gap-2">
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium truncate">${item.nama}${item.isCustom?'<span class="ml-1 text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-full">Custom</span>':''}${item.hargaOverride?'<span class="ml-1 text-xs bg-yellow-100 text-yellow-600 px-1.5 py-0.5 rounded-full">Harga diubah</span>':''}</p>
-                        ${item.isPPOB?`
-                            <div class="mt-1 text-xs text-gray-500">${item.nominal>0?'Nominal: Rp '+item.nominal.toLocaleString()+'<br>':''}Admin: Rp ${item.admin.toLocaleString()}</div>
-                            <p class="text-sm font-bold mt-1">Rp ${subtotal.toLocaleString()}</p>
-                        `:`
-                            <div class="flex items-center gap-2 mt-1">
-                                <button onclick="updateQty(${index},-1)" class="w-6 h-6 bg-gray-100 rounded text-xs hover:bg-gray-200">−</button>
-                                <span class="text-sm font-bold w-8 text-center">${item.qty}</span>
-                                <button onclick="updateQty(${index},1)" class="w-6 h-6 bg-gray-100 rounded text-xs hover:bg-gray-200">+</button>
-                                ${!item.isCustom?`
-                                <select onchange="changeSatuan(${index},this.value)" class="text-xs border rounded px-1 py-0.5 bg-white" id="satuan-select-${index}">
-                                    <option value="dasar" ${item.satuanType==='dasar'?'selected':''}>${item.satuan||'pcs'} (ecer)</option>
-                                </select>
-                                <button onclick="showEditHarga(${index})" class="text-gray-400 hover:text-primary transition" title="Edit Harga"><i class="fas fa-pencil-alt text-xs"></i></button>
-                                `:''}
-                            </div>
-                            <p class="text-xs text-gray-400 mt-1">${item.qty} × Rp ${item.harga.toLocaleString()} = <span class="font-bold text-dark">Rp ${subtotal.toLocaleString()}</span></p>
-                        `}
-                    </div>
-                    <button onclick="removeItem(${index})" class="text-red-400 hover:text-red-600 flex-shrink-0"><i class="fas fa-times"></i></button>
+            <div class="flex items-center justify-between py-1.5 px-2 border-b border-gray-100 hover:bg-gray-50 transition text-xs">
+                
+                <!-- Kiri: Nama + Subtotal -->
+                <div class="flex-1 min-w-0 mr-2">
+                    <p class="font-medium truncate">
+                        ${item.nama}
+                        ${item.isCustom ? '<span class="text-[10px] bg-orange-100 text-orange-600 px-1 rounded ml-1">Cust</span>' : ''}
+                        ${item.hargaOverride ? '<span class="text-[10px] bg-yellow-100 text-yellow-600 px-1 rounded ml-1">Ubah</span>' : ''}
+                    </p>
+                    <p class="text-gray-500 mt-0.5">
+                        ${item.isPPOB 
+                            ? 'Admin: Rp ' + item.admin.toLocaleString()
+                            : item.qty + ' × ' + (item.satuanType !== 'dasar' ? item.satuanType : item.satuan || 'pcs') + ' × Rp ' + item.harga.toLocaleString()
+                        }
+                    </p>
                 </div>
+                
+                <!-- Kanan: Qty +/- , Subtotal, Aksi -->
+                <div class="flex items-center gap-1 flex-shrink-0">
+                    ${!item.isPPOB ? `
+                        <button onclick="updateQty(${index}, -1)" class="w-5 h-5 bg-gray-100 rounded text-[10px] leading-none hover:bg-gray-200">−</button>
+                        <span class="text-xs font-bold w-5 text-center">${item.qty}</span>
+                        <button onclick="updateQty(${index}, 1)" class="w-5 h-5 bg-gray-100 rounded text-[10px] leading-none hover:bg-gray-200">+</button>
+                        
+                        ${!item.isCustom ? `
+                        <select onchange="changeSatuan(${index}, this.value)" 
+                                class="text-[10px] border rounded px-1 py-0.5 bg-white w-16"
+                                id="satuan-select-${index}">
+                            <option value="dasar" ${item.satuanType === 'dasar' ? 'selected' : ''}>${item.satuan || 'pcs'}</option>
+                        </select>
+                        <button onclick="showEditHarga(${index})" class="text-gray-400 hover:text-primary text-[10px]" title="Edit Harga">✏️</button>
+                        ` : ''}
+                    ` : ''}
+                    
+                    <span class="text-xs font-bold ml-1">Rp ${subtotal.toLocaleString()}</span>
+                    
+                    <button onclick="removeItem(${index})" class="text-red-400 hover:text-red-600 text-[10px] ml-1">✕</button>
+                </div>
+                
             </div>`;
     });
     
     container.innerHTML = html;
     document.getElementById('grand-total').textContent = 'Rp ' + grandTotal.toLocaleString();
-    cart.forEach((item, index) => { if (!item.isPPOB && !item.isCustom && item.produkId > 0) setTimeout(() => loadSatuanOptions(index, item.produkId), 100); });
-    document.getElementById('input-bayar').value = ''; document.getElementById('input-bayar-piutang').value = '';
+    
+    // Load satuan options
+    cart.forEach((item, index) => {
+        if (!item.isPPOB && !item.isCustom && item.produkId > 0) {
+            setTimeout(() => loadSatuanOptions(index, item.produkId), 100);
+        }
+    });
+    
+    document.getElementById('input-bayar').value = '';
+    document.getElementById('input-bayar-piutang').value = '';
     document.getElementById('info-pembayaran').classList.add('hidden');
 }
 
