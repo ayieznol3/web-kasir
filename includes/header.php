@@ -286,6 +286,12 @@ $user = userLogin();
                               <?= ($current_page == 'log') ? 'bg-indigo-50 text-primary font-medium' : 'text-gray-600 hover:bg-gray-100' ?>">
                         <i class="fas fa-history w-4 text-center text-xs"></i> Log Aktivitas
                     </a>
+                    <a href="?page=pengaturan" 
+                        class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition
+                             <?= ($current_page == 'pengaturan') ? 'bg-indigo-50 text-primary font-medium' : 'text-gray-600 hover:bg-gray-100' ?>">
+                        <i class="fas fa-cog w-5 text-center"></i>
+                        Pengaturan
+                    </a>
                     <a href="?page=backup" 
                        class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition
                               <?= ($current_page == 'backup') ? 'bg-indigo-50 text-primary font-medium' : 'text-gray-600 hover:bg-gray-100' ?>">

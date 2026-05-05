@@ -157,6 +157,12 @@ switch ($page) {
     case 'kasir-mobile':
     include 'halaman/kasir-mobile.php';
     break;
+    
+    case 'pengaturan':
+    include 'includes/header.php';
+    include 'halaman/pengaturan.php';
+    include 'includes/footer.php';
+    break;
         
         case 'laporan-keuangan':
     include 'includes/header.php';

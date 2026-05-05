@@ -630,6 +630,22 @@ ALTER TABLE `transaksi_detail`
   ADD CONSTRAINT `transaksi_detail_ibfk_2` FOREIGN KEY (`produk_id`) REFERENCES `produk` (`id`);
 COMMIT;
 
+CREATE TABLE pengaturan (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    kunci VARCHAR(50) UNIQUE NOT NULL,
+    nilai TEXT
+) ENGINE=InnoDB;
+
+INSERT INTO pengaturan (kunci, nilai) VALUES
+('toko_nama', 'Toko Kelontong Jaya'),
+('toko_alamat', 'Jl. Merdeka No. 123, Jakarta'),
+('toko_telp', '0812-3456-7890'),
+('struk_footer', 'Terima kasih telah berbelanja\nBarang yang sudah dibeli\ntidak dapat ditukar'),
+('printer_ukuran', '58mm'),
+('printer_auto', '0'),
+('backup_path', 'backups/'),
+('backup_auto', '0');
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

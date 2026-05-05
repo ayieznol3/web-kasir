@@ -7,15 +7,18 @@ if (!isset($_SESSION['user_id']) || !isAdmin()) {
     redirect('../index.php?page=login');
 }
 
+// Path backup (dengan fallback)
+$backup_path = defined('BACKUP_PATH') ? BACKUP_PATH : 'backups/';
+
 // Nama file backup
 $nama_file = 'backup_' . date('Ymd_His') . '.sql';
 
 // Buat folder kalau belum ada
-if (!is_dir(BACKUP_PATH)) {
-    mkdir(BACKUP_PATH, 0755, true);
+if (!empty($backup_path) && !is_dir($backup_path)) {
+    @mkdir($backup_path, 0755, true);
 }
 
-$file_path = BACKUP_PATH . $nama_file;
+$file_path = $backup_path . $nama_file;
 
 // Buka file untuk ditulis
 $handle = fopen($file_path, 'w');
@@ -72,7 +75,7 @@ if (file_exists($file_path)) {
     mysqli_query($conn, "INSERT INTO log_aktivitas (user_id, aktivitas, detail) 
                          VALUES ({$_SESSION['user_id']}, 'Backup', 'Backup database: $nama_file ($size_readable)')");
     
-    $_SESSION['sukses'] = "Backup berhasil!<br>File: $nama_file<br>Ukuran: $size_readable<br>Lokasi: Google Drive/Backup Kasir/";
+    $_SESSION['sukses'] = "Backup berhasil!<br>File: $nama_file<br>Ukuran: $size_readable<br>Lokasi: " . htmlspecialchars($backup_path);
     $_SESSION['sukses_type'] = 'success';
 } else {
     $_SESSION['error'] = 'Gagal membuat file backup!';

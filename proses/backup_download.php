@@ -8,7 +8,8 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $file = $_GET['file'] ?? '';
-$file_path = BACKUP_PATH . basename($file);
+$backup_path = defined('BACKUP_PATH') ? BACKUP_PATH : 'backups/';
+$file_path = $backup_path . basename($file);
 
 if (file_exists($file_path)) {
     header('Content-Type: application/sql');

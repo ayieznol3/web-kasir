@@ -206,4 +206,14 @@ function terbilang($angka) {
     }
     return '';
 }
+
+// ============================================
+// FUNGSI PENGATURAN
+// ============================================
+
+function getPengaturan($kunci, $default = '') {
+    global $conn;
+    $result = mysqli_fetch_assoc(mysqli_query($conn, "SELECT nilai FROM pengaturan WHERE kunci = '$kunci'"));
+    return $result ? $result['nilai'] : $default;
+}
 ?>
