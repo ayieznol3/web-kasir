@@ -93,4 +93,13 @@ function getGambar($gambar = null) {
     }
     return "uploads/produk/default.png";
 }
+
+function hapusGambar($nama_file) {
+    if ($nama_file && $nama_file != 'default.png') {
+        $file = "../uploads/produk/" . $nama_file;
+        if (file_exists($file)) {
+            unlink($file);
+        }
+    }
+}
 ?>
