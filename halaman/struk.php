@@ -12,6 +12,7 @@ $transaksi = mysqli_fetch_assoc(mysqli_query($conn, "
     WHERE t.id = $id
 "));
 
+
 if (!$transaksi) { echo "Transaksi tidak ditemukan"; exit; }
 
 $detail = mysqli_query($conn, "
@@ -20,6 +21,13 @@ $detail = mysqli_query($conn, "
     JOIN produk pr ON td.produk_id = pr.id
     WHERE td.transaksi_id = $id
 ");
+
+$footer_query = mysqli_query($conn, "SELECT nilai FROM pengaturan WHERE kunci = 'struk_footer'");
+$footer_data = mysqli_fetch_assoc($footer_query);
+$struk_footer = $footer_data ? $footer_data['nilai'] : 'Terima kasih telah berbelanja\nBarang yang sudah dibeli\ntidak dapat ditukar';
+
+
+
 
 // Ambil sisa piutang pelanggan
 $sisa_piutang = 0;
@@ -205,6 +213,14 @@ if ($transaksi['pelanggan_id']) {
 
 <!-- ==================== FOOTER ==================== -->
 <div class="center">
+    <?php 
+    $footer_lines = explode('\n', $struk_footer);
+    foreach($footer_lines as $line): 
+    ?>
+    <p style="font-size:7px;"><?= htmlspecialchars(trim($line)) ?></p>
+    <?php endforeach; ?>
+    <p style="font-size:7px; margin-top:3px;"><?= date('d/m/Y H:i') ?></p>
+</div>
     
     <button onclick="window.print()" class="btn-print no-print">🖨️ Cetak Thermal (58mm)</button>
     <button onclick="downloadPDF()" class="btn-pdf no-print">📥 Download PDF</button>
