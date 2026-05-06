@@ -13,8 +13,26 @@ $username = mysqli_real_escape_string($conn, $_POST['username']);
 $password = $_POST['password'];
 $role = mysqli_real_escape_string($conn, $_POST['role']);
 
+// Validasi
+if (empty($nama) || empty($username)) {
+    $_SESSION['error'] = 'Nama dan username wajib diisi!';
+    $_SESSION['error_type'] = 'danger';
+    redirect('../index.php?page=users');
+}
+
+if (!$id && empty($password)) {
+    $_SESSION['error'] = 'Password wajib diisi untuk user baru!';
+    $_SESSION['error_type'] = 'danger';
+    redirect('../index.php?page=users');
+}
+
 // Cek username duplikat
-$cek = mysqli_query($conn, "SELECT id FROM users WHERE username = '$username'" . ($id ? " AND id != $id" : ""));
+if ($id) {
+    $cek = mysqli_query($conn, "SELECT id FROM users WHERE username = '$username' AND id != $id");
+} else {
+    $cek = mysqli_query($conn, "SELECT id FROM users WHERE username = '$username'");
+}
+
 if (mysqli_num_rows($cek) > 0) {
     $_SESSION['error'] = 'Username sudah digunakan!';
     $_SESSION['error_type'] = 'danger';

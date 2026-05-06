@@ -48,7 +48,7 @@ $pelanggan_list = mysqli_query($conn, "SELECT * FROM pelanggan ORDER BY nama");
 </div>
 
 <!-- ==================== SEARCH + SCAN ==================== -->
-<div class="px-3 py-2 bg-white border-b">
+<div class="px-3 py-2 bg-white border-b sticky top-[96px] z-30">
     <div class="flex gap-2">
         <div class="relative flex-1">
             <i class="fas fa-search absolute left-3 top-3 text-gray-400 text-sm"></i>
@@ -66,25 +66,50 @@ $pelanggan_list = mysqli_query($conn, "SELECT * FROM pelanggan ORDER BY nama");
 </div>
 
 <!-- ==================== CONTENT BARANG ==================== -->
+<!-- ==================== CONTENT BARANG ==================== -->
 <div id="content-barang" class="px-3 py-2">
-    <p class="text-xs text-gray-400 font-medium mb-2">⭐ Sering Dibeli</p>
-    <div class="grid grid-cols-3 gap-2 produk-grid mb-2" id="fast-moving">
+    <!-- Fast Moving & All Products (List) -->
+    <p class="text-xs text-gray-400 font-medium mb-2 px-1">📦 Produk paling laku</p>
+    <div class="produk-grid space-y-1" id="fast-moving">
         <?php 
-        $fast_moving = mysqli_query($conn, "
+        $all_produk_list = mysqli_query($conn, "
             SELECT pr.*, COALESCE(SUM(td.qty),0) as total_terjual
             FROM produk pr
             LEFT JOIN transaksi_detail td ON pr.id = td.produk_id
             LEFT JOIN transaksi t ON td.transaksi_id = t.id AND DATE(t.created_at) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
             WHERE pr.stok_dasar != 0
-            GROUP BY pr.id ORDER BY total_terjual DESC LIMIT 12
+            GROUP BY pr.id 
+            ORDER BY total_terjual DESC, pr.nama ASC 
+            LIMIT 50
         ");
-        while($fm = mysqli_fetch_assoc($fast_moving)): 
+        while($p = mysqli_fetch_assoc($all_produk_list)): 
+            $gambar = $p['gambar'] ?: 'default.png';
         ?>
-        <button onclick="addToCart(<?= $fm['id'] ?>, '<?= addslashes($fm['nama']) ?>', <?= $fm['harga_jual'] ?>, '<?= $fm['satuan_dasar'] ?>', <?= $fm['stok_dasar'] ?>, 1, 'dasar', <?= $fm['harga_beli'] ?>)" 
-                class="bg-white border rounded-xl p-2 text-center hover:border-primary active:bg-gray-50 transition">
-            <p class="text-xs font-medium truncate"><?= $fm['nama'] ?></p>
-            <p class="text-sm font-bold text-primary"><?= rupiah($fm['harga_jual']) ?></p>
-            <p class="text-xs text-gray-400">Stok: <?= $fm['stok_dasar'] ?></p>
+        <button onclick="addToCart(<?= $p['id'] ?>, '<?= addslashes($p['nama']) ?>', <?= $p['harga_jual'] ?>, '<?= $p['satuan_dasar'] ?>', <?= $p['stok_dasar'] ?>, 1, 'dasar', <?= $p['harga_beli'] ?>)" 
+                class="w-full flex items-center gap-3 p-2.5 bg-white border rounded-xl hover:border-primary active:bg-gray-50 transition text-left">
+            <img src="uploads/produk/<?= $gambar ?>" 
+                 alt="<?= htmlspecialchars($p['nama']) ?>"
+                 class="w-12 h-12 object-cover rounded-lg flex-shrink-0"
+                 onerror="this.src='uploads/produk/default.png'">
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium truncate"><?= htmlspecialchars($p['nama']) ?></p>
+                <div class="flex items-center justify-between mt-1">
+                    <div>
+                        <p class="text-sm font-bold text-primary"><?= rupiah($p['harga_jual']) ?></p>
+                        <?php if($p['total_terjual'] > 0): ?>
+                        <p class="text-[10px] text-gray-400">🔥 <?= $p['total_terjual'] ?> terjual</p>
+                        <?php endif; ?>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs <?= $p['stok_dasar'] <= 10 ? 'text-red-500 font-bold' : 'text-gray-400' ?>">
+                            Stok: <?= $p['stok_dasar'] ?> <?= $p['satuan_dasar'] ?>
+                        </p>
+                        <?php if($p['total_terjual'] > 20): ?>
+                        <span class="text-[9px] bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded-full">⭐ Best</span>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
         </button>
         <?php endwhile; ?>
     </div>
@@ -459,6 +484,7 @@ function updateQty(index, delta) {
 
 // ==================== RENDER KERANJANG ====================
 // ==================== RENDER KERANJANG ====================
+// ==================== RENDER KERANJANG MOBILE ====================
 function renderCart() {
     const container = document.getElementById('keranjang-items');
     const empty = document.getElementById('keranjang-kosong');
@@ -489,45 +515,44 @@ function renderCart() {
         item.subtotal = subtotal;
         grandTotal += subtotal;
         
-        // ============ TAMPILAN 2 BARIS MOBILE ============
         html += `
-            <div class="flex items-center justify-between py-1.5 px-1 border-b border-gray-100 hover:bg-gray-50 transition text-xs">
+            <div class="py-2 px-1 border-b border-gray-100 hover:bg-gray-50 transition">
                 
-                <!-- Kiri: Nama + Detail -->
-                <div class="flex-1 min-w-0 mr-1">
-                    <p class="font-medium truncate text-[11px]">
+                <!-- Baris 1: Nama + Hapus -->
+                <div class="flex items-center justify-between mb-1">
+                    <p class="text-[11px] font-medium truncate flex-1">
                         ${item.nama}
-                        ${item.isCustom ? '<span class="text-[9px] bg-orange-100 text-orange-600 px-1 rounded ml-1">Cust</span>' : ''}
-                        ${item.hargaOverride ? '<span class="text-[9px] bg-yellow-100 text-yellow-600 px-1 rounded ml-1">Ubah</span>' : ''}
+                        ${item.isCustom ? '<span class="text-[9px] bg-orange-100 text-orange-600 px-1 rounded">Custom</span>' : ''}
+                        ${item.hargaOverride ? '<span class="text-[9px] bg-yellow-100 text-yellow-600 px-1 rounded">Ubah</span>' : ''}
                     </p>
-                    <p class="text-gray-500 text-[10px] mt-0.5">
-                        ${item.isPPOB 
-                            ? 'Admin: Rp ' + item.admin.toLocaleString()
-                            : item.qty + ' × ' + (item.satuanType !== 'dasar' ? item.satuanType : item.satuan || 'pcs') + ' × Rp ' + item.harga.toLocaleString()
-                        }
-                    </p>
+                    <button onclick="removeItem(${index})" class="text-gray-300 hover:text-red-500 text-xs ml-1 flex-shrink-0">✕</button>
                 </div>
                 
-                <!-- Kanan: Qty, Subtotal, Aksi -->
-                <div class="flex items-center gap-0.5 flex-shrink-0">
-                    ${!item.isPPOB ? `
-                        <button onclick="updateQty(${index}, -1)" class="w-4 h-4 bg-gray-100 rounded text-[9px] leading-none">−</button>
-                        <span class="text-[10px] font-bold w-4 text-center">${item.qty}</span>
-                        <button onclick="updateQty(${index}, 1)" class="w-4 h-4 bg-gray-100 rounded text-[9px] leading-none">+</button>
-                        
-                        ${!item.isCustom ? `
-                        <select onchange="changeSatuan(${index}, this.value)" 
-                                class="text-[9px] border rounded px-0.5 py-0.5 bg-white w-14"
-                                id="satuan-m-${index}">
-                            <option value="dasar" ${item.satuanType === 'dasar' ? 'selected' : ''}>${item.satuan || 'pcs'}</option>
-                        </select>
-                        <button onclick="showEditHarga(${index})" class="text-gray-400 hover:text-primary text-[9px]" title="Edit Harga">✏️</button>
-                        ` : ''}
-                    ` : ''}
-                    
-                    <span class="text-[10px] font-bold ml-0.5">Rp ${subtotal.toLocaleString()}</span>
-                    
-                    <button onclick="removeItem(${index})" class="text-red-400 hover:text-red-600 text-[9px] ml-0.5">✕</button>
+                <!-- Baris 2: Detail & Subtotal -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-0.5 flex-wrap text-[10px] text-gray-500">
+                        ${item.isPPOB ? `
+                            <span>Admin: Rp ${item.admin.toLocaleString()}</span>
+                        ` : `
+                            ${!item.isCustom ? `
+                            <button onclick="updateQty(${index}, -1)" class="w-4 h-4 bg-gray-200 rounded-full text-[9px] leading-none hover:bg-gray-300">−</button>
+                            <span class="font-bold text-gray-700 w-3 text-center">${item.qty}</span>
+                            <button onclick="updateQty(${index}, 1)" class="w-4 h-4 bg-gray-200 rounded-full text-[9px] leading-none hover:bg-gray-300">+</button>
+                            ` : ''}
+                            <span>× ${item.satuanType !== 'dasar' ? item.satuanType : (item.satuan || 'pcs')}</span>
+                            <span>· Rp ${item.harga.toLocaleString()}</span>
+                            
+                            ${!item.isCustom ? `
+                            <select onchange="changeSatuan(${index}, this.value)" 
+                                    class="text-[9px] border rounded px-0.5 py-0.5 bg-white ml-0.5"
+                                    id="satuan-m-${index}">
+                                <option value="dasar">${item.satuan || 'pcs'}</option>
+                            </select>
+                            <button onclick="showEditHarga(${index})" class="text-gray-400 hover:text-blue-500 text-[9px]" title="Edit Harga">✏️</button>
+                            ` : '<span class="text-[9px] text-orange-500">Manual</span>'}
+                        `}
+                    </div>
+                    <span class="text-[11px] font-bold text-gray-800 flex-shrink-0 ml-1">Rp ${subtotal.toLocaleString()}</span>
                 </div>
                 
             </div>`;
@@ -537,7 +562,6 @@ function renderCart() {
     document.getElementById('grand-total').textContent = 'Rp ' + grandTotal.toLocaleString();
     document.getElementById('header-total').textContent = 'Rp ' + grandTotal.toLocaleString();
     
-    // Load satuan options
     cart.forEach((item, index) => {
         if (!item.isPPOB && !item.isCustom && item.produkId > 0) {
             setTimeout(() => loadSatuanOptions(index, item.produkId), 100);

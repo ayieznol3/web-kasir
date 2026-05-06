@@ -600,6 +600,7 @@ function updateQty(index, delta) {
 
 // ==================== RENDER KERANJANG ====================
 // ==================== RENDER KERANJANG ====================
+// ==================== RENDER KERANJANG ====================
 function renderCart() {
     const container = document.getElementById('keranjang-items');
     const empty = document.getElementById('keranjang-kosong');
@@ -629,45 +630,44 @@ function renderCart() {
         item.subtotal = subtotal;
         grandTotal += subtotal;
         
-        // ============ TAMPILAN 2 BARIS ============
         html += `
-            <div class="flex items-center justify-between py-1.5 px-2 border-b border-gray-100 hover:bg-gray-50 transition text-xs">
+            <div class="py-2 px-2 border-b border-gray-100 hover:bg-gray-50 transition">
                 
-                <!-- Kiri: Nama + Subtotal -->
-                <div class="flex-1 min-w-0 mr-2">
-                    <p class="font-medium truncate">
+                <!-- Baris 1: Nama + Hapus -->
+                <div class="flex items-center justify-between mb-1">
+                    <p class="text-xs font-medium truncate flex-1">
                         ${item.nama}
-                        ${item.isCustom ? '<span class="text-[10px] bg-orange-100 text-orange-600 px-1 rounded ml-1">Cust</span>' : ''}
-                        ${item.hargaOverride ? '<span class="text-[10px] bg-yellow-100 text-yellow-600 px-1 rounded ml-1">Ubah</span>' : ''}
+                        ${item.isCustom ? '<span class="text-[9px] bg-orange-100 text-orange-600 px-1 rounded">Custom</span>' : ''}
+                        ${item.hargaOverride ? '<span class="text-[9px] bg-yellow-100 text-yellow-600 px-1 rounded">Ubah</span>' : ''}
                     </p>
-                    <p class="text-gray-500 mt-0.5">
-                        ${item.isPPOB 
-                            ? 'Admin: Rp ' + item.admin.toLocaleString()
-                            : item.qty + ' × ' + (item.satuanType !== 'dasar' ? item.satuanType : item.satuan || 'pcs') + ' × Rp ' + item.harga.toLocaleString()
-                        }
-                    </p>
+                    <button onclick="removeItem(${index})" class="text-gray-300 hover:text-red-500 text-xs ml-1 flex-shrink-0">✕</button>
                 </div>
                 
-                <!-- Kanan: Qty +/- , Subtotal, Aksi -->
-                <div class="flex items-center gap-1 flex-shrink-0">
-                    ${!item.isPPOB ? `
-                        <button onclick="updateQty(${index}, -1)" class="w-5 h-5 bg-gray-100 rounded text-[10px] leading-none hover:bg-gray-200">−</button>
-                        <span class="text-xs font-bold w-5 text-center">${item.qty}</span>
-                        <button onclick="updateQty(${index}, 1)" class="w-5 h-5 bg-gray-100 rounded text-[10px] leading-none hover:bg-gray-200">+</button>
-                        
-                        ${!item.isCustom ? `
-                        <select onchange="changeSatuan(${index}, this.value)" 
-                                class="text-[10px] border rounded px-1 py-0.5 bg-white w-16"
-                                id="satuan-select-${index}">
-                            <option value="dasar" ${item.satuanType === 'dasar' ? 'selected' : ''}>${item.satuan || 'pcs'}</option>
-                        </select>
-                        <button onclick="showEditHarga(${index})" class="text-gray-400 hover:text-primary text-[10px]" title="Edit Harga">✏️</button>
-                        ` : ''}
-                    ` : ''}
-                    
-                    <span class="text-xs font-bold ml-1">Rp ${subtotal.toLocaleString()}</span>
-                    
-                    <button onclick="removeItem(${index})" class="text-red-400 hover:text-red-600 text-[10px] ml-1">✕</button>
+                <!-- Baris 2: Detail & Subtotal -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-1 flex-wrap text-[10px] text-gray-500">
+                        ${item.isPPOB ? `
+                            <span>Admin: Rp ${item.admin.toLocaleString()}</span>
+                        ` : `
+                            ${!item.isCustom ? `
+                            <button onclick="updateQty(${index}, -1)" class="w-4 h-4 bg-gray-200 rounded-full text-[10px] leading-none hover:bg-gray-300">−</button>
+                            <span class="font-bold text-gray-700 w-4 text-center">${item.qty}</span>
+                            <button onclick="updateQty(${index}, 1)" class="w-4 h-4 bg-gray-200 rounded-full text-[10px] leading-none hover:bg-gray-300">+</button>
+                            ` : ''}
+                            <span>× ${item.satuanType !== 'dasar' ? item.satuanType : (item.satuan || 'pcs')}</span>
+                            <span>· Rp ${item.harga.toLocaleString()}</span>
+                            
+                            ${!item.isCustom ? `
+                            <select onchange="changeSatuan(${index}, this.value)" 
+                                    class="text-[9px] border rounded px-1 py-0.5 bg-white ml-1"
+                                    id="satuan-select-${index}">
+                                <option value="dasar">${item.satuan || 'pcs'}</option>
+                            </select>
+                            <button onclick="showEditHarga(${index})" class="text-gray-400 hover:text-blue-500 text-[10px]" title="Edit Harga">✏️</button>
+                            ` : '<span class="text-[9px] text-orange-500">Manual</span>'}
+                        `}
+                    </div>
+                    <span class="text-xs font-bold text-gray-800 flex-shrink-0 ml-2">Rp ${subtotal.toLocaleString()}</span>
                 </div>
                 
             </div>`;
@@ -676,7 +676,6 @@ function renderCart() {
     container.innerHTML = html;
     document.getElementById('grand-total').textContent = 'Rp ' + grandTotal.toLocaleString();
     
-    // Load satuan options
     cart.forEach((item, index) => {
         if (!item.isPPOB && !item.isCustom && item.produkId > 0) {
             setTimeout(() => loadSatuanOptions(index, item.produkId), 100);
