@@ -31,10 +31,6 @@ $user = userLogin();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        #sidebar {
-    transition: all 0.3s ease;
-}
-
         .sidebar-link {
             transition: all 0.2s ease;
         }
@@ -69,9 +65,9 @@ $user = userLogin();
         <div class="flex justify-between h-16 items-center">
             
             <div class="flex items-center gap-3">
-                <button onclick="toggleSidebar()" class="text-white hover:text-gray-300" title="Sembunyikan Sidebar">
-    <i class="fas fa-bars text-xl"></i>
-</button>
+                <button onclick="toggleSidebar()" class="lg:hidden text-white hover:text-gray-300">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
                         <i class="fas fa-store text-white"></i>
@@ -117,7 +113,7 @@ $user = userLogin();
 <!-- ==================== CONTAINER UTAMA ==================== -->
 <div class="flex h-[calc(100vh-64px)]">
     
-   <aside id="sidebar" class="w-64 bg-white shadow-md overflow-y-auto flex-shrink-0 hidden transition-all duration-300" style="display: none;">
+    <aside id="sidebar" class="w-64 bg-white shadow-md overflow-y-auto flex-shrink-0 hidden lg:block transition-transform duration-300">
         <nav class="p-4 space-y-1">
             
             <!-- ==================== MENU UTAMA ==================== -->
@@ -334,12 +330,4 @@ $user = userLogin();
     <main class="flex-1 overflow-y-auto p-6">
         <?php flash('sukses'); ?>
         <?php flash('error'); ?>
-
-        <!-- Tombol munculkan sidebar -->
-<button id="btn-show-sidebar" 
-        onclick="toggleSidebar()" 
-        class="hidden fixed top-20 left-2 z-50 bg-primary text-white w-8 h-8 rounded-full shadow-lg hover:bg-indigo-700 transition"
-        title="Tampilkan Menu">
-    <i class="fas fa-chevron-right text-xs"></i>
-</button>
 <!-- ==================== END OF HEADER.PHP ==================== -->
