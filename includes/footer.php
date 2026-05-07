@@ -16,15 +16,12 @@ function toggleSidebar() {
     const overlay = document.getElementById('overlay');
     const showBtn = document.getElementById('btn-show-sidebar');
     
-    // Cek apakah sidebar sedang tersembunyi
     if (sidebar.style.display === 'none' || sidebar.classList.contains('hidden')) {
-        // Tampilkan
         sidebar.style.display = 'block';
         sidebar.classList.remove('hidden');
         if (showBtn) showBtn.classList.add('hidden');
         localStorage.setItem('sidebar-hidden', 'false');
     } else {
-        // Sembunyikan
         sidebar.style.display = 'none';
         sidebar.classList.add('hidden');
         if (showBtn) showBtn.classList.remove('hidden');
@@ -53,19 +50,32 @@ function toggleSubmenu(id) {
 document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.getElementById('sidebar');
     const showBtn = document.getElementById('btn-show-sidebar');
-    const isHidden = localStorage.getItem('sidebar-hidden') === 'true';
+    const isHidden = localStorage.getItem('sidebar-hidden');
     
-    if (isHidden && sidebar) {
+    // Default: tampilkan sidebar di desktop, sembunyikan di mobile
+    if (isHidden === null) {
+        // Pertama kali buka
+        if (window.innerWidth >= 1024) {
+            // Desktop: tampilkan
+            sidebar.style.display = 'block';
+            sidebar.classList.remove('hidden');
+            localStorage.setItem('sidebar-hidden', 'false');
+        } else {
+            // Mobile: sembunyikan
+            sidebar.style.display = 'none';
+            sidebar.classList.add('hidden');
+            localStorage.setItem('sidebar-hidden', 'true');
+        }
+    } else if (isHidden === 'true') {
         sidebar.style.display = 'none';
         sidebar.classList.add('hidden');
-        if (showBtn) showBtn.classList.remove('hidden');
-    } else if (sidebar) {
+        if (showBtn && window.innerWidth >= 1024) showBtn.classList.remove('hidden');
+    } else {
         sidebar.style.display = 'block';
         sidebar.classList.remove('hidden');
         if (showBtn) showBtn.classList.add('hidden');
     }
 });
-
 // ==================== JAM REALTIME ====================
 function updateJam() {
     const now = new Date();

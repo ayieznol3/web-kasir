@@ -117,7 +117,7 @@ $user = userLogin();
 <!-- ==================== CONTAINER UTAMA ==================== -->
 <div class="flex h-[calc(100vh-64px)]">
     
-    <aside id="sidebar" class="w-64 bg-white shadow-md overflow-y-auto flex-shrink-0 hidden lg:block transition-transform duration-300">
+   <aside id="sidebar" class="w-64 bg-white shadow-md overflow-y-auto flex-shrink-0 hidden transition-all duration-300" style="display: none;">
         <nav class="p-4 space-y-1">
             
             <!-- ==================== MENU UTAMA ==================== -->
