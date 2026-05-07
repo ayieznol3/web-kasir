@@ -189,12 +189,34 @@ $pelanggan_list = mysqli_query($conn, "SELECT * FROM pelanggan ORDER BY nama");
             
             <!-- Pelanggan -->
             <div>
-                <select id="pelanggan-select" class="w-full px-3 py-2 border rounded-lg text-sm" onchange="updatePelanggan()">
-                    <option value="">👤 Umum</option>
-                    <?php while($pl = mysqli_fetch_assoc($pelanggan_list)): ?>
-                    <option value="<?= $pl['id'] ?>"><?= $pl['nama'] ?> <?= $pl['saldo_piutang'] > 0 ? '(Piutang: '.rupiah($pl['saldo_piutang']).')' : '' ?></option>
-                    <?php endwhile; ?>
-                </select>
+                <!-- Live Search Pelanggan -->
+<div class="relative">
+    <input type="text" id="search-pelanggan" placeholder="👤 Cari pelanggan..." autocomplete="off"
+           class="w-full px-3 py-2 border rounded-lg text-xs"
+           oninput="searchPelanggan(this.value)"
+           onfocus="searchPelanggan(this.value)">
+    <input type="hidden" id="pelanggan-select" value="">
+    
+    <!-- Dropdown hasil -->
+    <div id="pelanggan-results" class="hidden absolute z-20 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-40 overflow-y-auto">
+        <div class="px-3 py-2 text-xs text-gray-400 hover:bg-gray-50 cursor-pointer" onclick="pilihPelanggan('', 'Umum')">
+            👤 Umum
+        </div>
+        <?php 
+        mysqli_data_seek($pelanggan_list, 0);
+        while($pl = mysqli_fetch_assoc($pelanggan_list)): 
+        ?>
+        <div class="px-3 py-2 text-xs hover:bg-gray-50 cursor-pointer flex justify-between" 
+             onclick="pilihPelanggan('<?= $pl['id'] ?>', '<?= addslashes($pl['nama']) ?>')"
+             data-nama="<?= strtolower($pl['nama']) ?>">
+            <span><?= $pl['nama'] ?></span>
+            <?php if($pl['saldo_piutang'] > 0): ?>
+            <span class="text-red-500 text-[10px]">Piutang: <?= rupiah($pl['saldo_piutang']) ?></span>
+            <?php endif; ?>
+        </div>
+        <?php endwhile; ?>
+    </div>
+</div>
                 <p id="pelanggan-warning" class="hidden text-xs text-red-500 mt-1">⚠️ Piutang wajib memilih pelanggan!</p>
             </div>
             
@@ -420,7 +442,18 @@ function hitungKembalian() {
     }
 }
 
-function updatePelanggan() { hitungKembalian(); }
+function updatePelanggan() {
+    hitungKembalian();
+    
+    // Update tampilan warning piutang
+    const pelangganId = document.getElementById('pelanggan-select').value;
+    const warning = document.getElementById('pelanggan-warning');
+    if (metodeBayar === 'piutang' && !pelangganId) {
+        warning.classList.remove('hidden');
+    } else {
+        warning.classList.add('hidden');
+    }
+}
 
 // ==================== PROSES PEMBAYARAN ====================
 async function prosesPembayaran() {
@@ -599,8 +632,7 @@ function updateQty(index, delta) {
 }
 
 // ==================== RENDER KERANJANG ====================
-// ==================== RENDER KERANJANG ====================
-// ==================== RENDER KERANJANG ====================
+
 function renderCart() {
     const container = document.getElementById('keranjang-items');
     const empty = document.getElementById('keranjang-kosong');
@@ -712,7 +744,7 @@ async function clearCart() {
     if (result.isConfirmed) { cart = []; renderCart(); swalSukses('Dikosongkan!'); }
 }
 
-// ==================== SEARCH ====================
+
 // ==================== SEARCH PRODUK (LIVE - DENGAN GAMBAR) ====================
 function searchProduk(keyword) {
     const resultsDiv = document.getElementById('search-results');
@@ -784,6 +816,55 @@ function searchProduk(keyword) {
     html += '</div>';
     resultsDiv.innerHTML = html;
 }
+
+// ==================== LIVE SEARCH PELANGGAN ====================
+function searchPelanggan(keyword) {
+    const resultsDiv = document.getElementById('pelanggan-results');
+    const items = resultsDiv.querySelectorAll('div[data-nama]');
+    
+    if (keyword.length === 0) {
+        // Tampilkan semua
+        items.forEach(item => item.style.display = '');
+        resultsDiv.classList.remove('hidden');
+        return;
+    }
+    
+    const kw = keyword.toLowerCase();
+    let found = 0;
+    
+    items.forEach(item => {
+        const nama = item.dataset.nama;
+        if (nama && nama.includes(kw)) {
+            item.style.display = '';
+            found++;
+        } else {
+            item.style.display = 'none';
+        }
+    });
+    
+    resultsDiv.classList.toggle('hidden', found === 0);
+}
+
+function pilihPelanggan(id, nama) {
+    document.getElementById('pelanggan-select').value = id;
+    document.getElementById('search-pelanggan').value = nama;
+    document.getElementById('pelanggan-results').classList.add('hidden');
+    updatePelanggan();
+}
+
+// Sembunyikan dropdown saat klik di luar
+document.addEventListener('click', function(e) {
+    const search = document.getElementById('search-pelanggan');
+    const results = document.getElementById('pelanggan-results');
+    if (e.target !== search && !results.contains(e.target)) {
+        results.classList.add('hidden');
+    }
+});
+
+// Tampilkan dropdown saat fokus
+document.getElementById('search-pelanggan').addEventListener('focus', function() {
+    document.getElementById('pelanggan-results').classList.remove('hidden');
+});
 
 // ==================== KEYBOARD ====================
 document.addEventListener('keydown', function(e) {

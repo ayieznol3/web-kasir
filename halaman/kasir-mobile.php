@@ -158,12 +158,33 @@ $pelanggan_list = mysqli_query($conn, "SELECT * FROM pelanggan ORDER BY nama");
         
         <!-- Pelanggan -->
         <div>
-            <select id="pelanggan-select" class="w-full px-3 py-2 border rounded-lg text-xs" onchange="updatePelanggan()">
-                <option value="">👤 Umum</option>
-                <?php while($pl = mysqli_fetch_assoc($pelanggan_list)): ?>
-                <option value="<?= $pl['id'] ?>"><?= $pl['nama'] ?> <?= $pl['saldo_piutang'] > 0 ? '(Piutang: '.rupiah($pl['saldo_piutang']).')' : '' ?></option>
-                <?php endwhile; ?>
-            </select>
+            <!-- Live Search Pelanggan -->
+<div class="relative">
+    <input type="text" id="search-pelanggan" placeholder="👤 Cari pelanggan..." autocomplete="off"
+           class="w-full px-3 py-2 border rounded-lg text-xs"
+           oninput="searchPelanggan(this.value)"
+           onfocus="searchPelanggan(this.value)">
+    <input type="hidden" id="pelanggan-select" value="">
+    
+    <div id="pelanggan-results" class="hidden absolute z-20 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-36 overflow-y-auto">
+        <div class="px-3 py-2 text-xs text-gray-400 hover:bg-gray-50 cursor-pointer" onclick="pilihPelanggan('', 'Umum')">
+            👤 Umum
+        </div>
+        <?php 
+        mysqli_data_seek($pelanggan_list, 0);
+        while($pl = mysqli_fetch_assoc($pelanggan_list)): 
+        ?>
+        <div class="px-3 py-2 text-xs hover:bg-gray-50 cursor-pointer flex justify-between" 
+             onclick="pilihPelanggan('<?= $pl['id'] ?>', '<?= addslashes($pl['nama']) ?>')"
+             data-nama="<?= strtolower($pl['nama']) ?>">
+            <span><?= $pl['nama'] ?></span>
+            <?php if($pl['saldo_piutang'] > 0): ?>
+            <span class="text-red-500 text-[10px]"><?= rupiah($pl['saldo_piutang']) ?></span>
+            <?php endif; ?>
+        </div>
+        <?php endwhile; ?>
+    </div>
+</div>
             <p id="pelanggan-warning-m" class="hidden text-xs text-red-500 mt-1">⚠️ Piutang wajib pilih pelanggan!</p>
         </div>
         
@@ -313,7 +334,16 @@ function hitungKembalian() {
         else info.innerHTML = '<span class="text-yellow-600 font-bold">📋 Full Piutang: Rp ' + grandTotal.toLocaleString() + '</span>';
     }
 }
-function updatePelanggan() { hitungKembalian(); }
+function updatePelanggan() {
+    hitungKembalian();
+    const pelangganId = document.getElementById('pelanggan-select').value;
+    const warning = document.getElementById('pelanggan-warning-m');
+    if (metodeBayar === 'piutang' && !pelangganId) {
+        warning.classList.remove('hidden');
+    } else {
+        warning.classList.add('hidden');
+    }
+}
 
 // ==================== PROSES PEMBAYARAN ====================
 async function prosesPembayaran() {
@@ -520,12 +550,12 @@ function renderCart() {
                 
                 <!-- Baris 1: Nama + Hapus -->
                 <div class="flex items-center justify-between mb-1">
-                    <p class="text-[11px] font-medium truncate flex-1">
+                    <p class="text-[12px] font-medium truncate flex-1">
                         ${item.nama}
-                        ${item.isCustom ? '<span class="text-[9px] bg-orange-100 text-orange-600 px-1 rounded">Custom</span>' : ''}
-                        ${item.hargaOverride ? '<span class="text-[9px] bg-yellow-100 text-yellow-600 px-1 rounded">Ubah</span>' : ''}
+                        ${item.isCustom ? '<span class="text-[10px] bg-orange-100 text-orange-600 px-1 rounded">Custom</span>' : ''}
+                        ${item.hargaOverride ? '<span class="text-[10px] bg-yellow-100 text-yellow-600 px-1 rounded">Ubah</span>' : ''}
                     </p>
-                    <button onclick="removeItem(${index})" class="text-gray-300 hover:text-red-500 text-xs ml-1 flex-shrink-0">✕</button>
+                    <button onclick="removeItem(${index})" class="text-gray-300 hover:text-red-500 text-xs ml-1 flex-shrink-0"> ✕ </button>
                 </div>
                 
                 <!-- Baris 2: Detail & Subtotal -->
@@ -535,9 +565,9 @@ function renderCart() {
                             <span>Admin: Rp ${item.admin.toLocaleString()}</span>
                         ` : `
                             ${!item.isCustom ? `
-                            <button onclick="updateQty(${index}, -1)" class="w-4 h-4 bg-gray-200 rounded-full text-[9px] leading-none hover:bg-gray-300">−</button>
+                            <button onclick="updateQty(${index}, -1)" class="w-4 h-4 bg-gray-200 rounded-full text-[10px] leading-none hover:bg-gray-300"> − </button>
                             <span class="font-bold text-gray-700 w-3 text-center">${item.qty}</span>
-                            <button onclick="updateQty(${index}, 1)" class="w-4 h-4 bg-gray-200 rounded-full text-[9px] leading-none hover:bg-gray-300">+</button>
+                            <button onclick="updateQty(${index}, 1)" class="w-4 h-4 bg-gray-200 rounded-full text-[10px] leading-none hover:bg-gray-300"> + </button>
                             ` : ''}
                             <span>× ${item.satuanType !== 'dasar' ? item.satuanType : (item.satuan || 'pcs')}</span>
                             <span>· Rp ${item.harga.toLocaleString()}</span>
@@ -548,7 +578,7 @@ function renderCart() {
                                     id="satuan-m-${index}">
                                 <option value="dasar">${item.satuan || 'pcs'}</option>
                             </select>
-                            <button onclick="showEditHarga(${index})" class="text-gray-400 hover:text-blue-500 text-[9px]" title="Edit Harga">✏️</button>
+                            <button onclick="showEditHarga(${index})" class="text-gray-400 hover:text-blue-500 text-[9px]" title="Edit Harga">-✏️-</button>
                             ` : '<span class="text-[9px] text-orange-500">Manual</span>'}
                         `}
                     </div>
@@ -666,6 +696,54 @@ function searchProduk(keyword) {
     html += '</div>';
     resultsDiv.innerHTML = html;
 }
+
+// ==================== LIVE SEARCH PELANGGAN ====================
+function searchPelanggan(keyword) {
+    const resultsDiv = document.getElementById('pelanggan-results');
+    const items = resultsDiv.querySelectorAll('div[data-nama]');
+    
+    if (keyword.length === 0) {
+        items.forEach(item => item.style.display = '');
+        resultsDiv.classList.remove('hidden');
+        return;
+    }
+    
+    const kw = keyword.toLowerCase();
+    let found = 0;
+    
+    items.forEach(item => {
+        const nama = item.dataset.nama;
+        if (nama && nama.includes(kw)) {
+            item.style.display = '';
+            found++;
+        } else {
+            item.style.display = 'none';
+        }
+    });
+    
+    resultsDiv.classList.toggle('hidden', found === 0);
+}
+
+function pilihPelanggan(id, nama) {
+    document.getElementById('pelanggan-select').value = id;
+    document.getElementById('search-pelanggan').value = nama;
+    document.getElementById('pelanggan-results').classList.add('hidden');
+    updatePelanggan();
+}
+
+document.addEventListener('click', function(e) {
+    const search = document.getElementById('search-pelanggan');
+    const results = document.getElementById('pelanggan-results');
+    if (e.target !== search && !results.contains(e.target)) {
+        results.classList.add('hidden');
+    }
+});
+
+document.getElementById('search-pelanggan').addEventListener('focus', function() {
+    document.getElementById('pelanggan-results').classList.remove('hidden');
+});
+
+
 // ==================== BARCODE SCANNER ====================
 function startScanner() {
     document.getElementById('scanner-area').classList.remove('hidden');
